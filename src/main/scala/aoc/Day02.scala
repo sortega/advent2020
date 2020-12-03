@@ -31,7 +31,7 @@ object Day02 {
   def part1(entries: List[Entry]): Int = entries.count(_.matchesOldPolicy)
   def part2(entries: List[Entry]): Int = entries.count(_.matchesNewPolicy)
 
-  @main def m(): Unit = {
+  def main(args: Array[String]): Unit = {
     println(part1(input))
     println(part2(input))
   }

@@ -18,7 +18,7 @@ object Day01 {
       if available.contains(third)
     } yield first * second * third).head
 
-  @main def main: Unit = {
+  def main(args: Array[String]): Unit = {
     println(part1(input))
     println(part2(input))
   }
