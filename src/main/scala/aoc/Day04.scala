@@ -1,8 +1,7 @@
 package aoc
 
 object Day04 {
-  val polarFiels    = Set("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
-  val passwordFiels = polarFiels + "cid"
+  val polarFiels = Set("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
 
   case class Passport(fields: Map[String, String]) {
     def validate: Boolean = polarFiels.subsetOf(fields.keySet)
