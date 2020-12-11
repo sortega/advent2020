@@ -1,7 +1,7 @@
 package aoc
 
 import aoc.Day03
-import aoc.Day03.{Area, Pos}
+import aoc.Day03.Area
 import org.junit.Assert._
 import org.junit.Test
 

@@ -1,14 +1,6 @@
 package aoc
 
 object Day03 {
-  case class Pos(r: Int, c: Int) {
-    def +(other: Pos)             = Pos(r + other.r, c + other.c)
-    override def toString: String = s"($r,$c)"
-  }
-
-  object Pos {
-    val Origin = Pos(0, 0)
-  }
 
   case class Area(trees: List[List[Boolean]]) {
     def lines: Int = trees.size
