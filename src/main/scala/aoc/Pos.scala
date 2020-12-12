@@ -3,7 +3,17 @@ package aoc
 import aoc.Pos.Adjacent
 
 case class Pos(r: Int, c: Int) {
-  def +(other: Pos)             = Pos(r + other.r, c + other.c)
+  def +(other: Pos)  = Pos(r + other.r, c + other.c)
+  def *(scalar: Int) = Pos(r * scalar, c * scalar)
+
+  /** Complex number multiplication assuming rows as the x axis
+    *  and -cols as the y axis */
+  def *(other: Pos) = Pos(
+    r = c * other.r + r * other.c,
+    c = c * other.c - r * other.r
+  )
+
+  def manhattanNorm: Int = r.abs + c.abs
 
   def adjacent: Set[Pos] = Adjacent.map(_ + this)
 
