@@ -1,5 +1,7 @@
 package aoc
 
+import aoc.ModularArithmetic._
+
 enum CardinalPoint(val vector: Pos) {
   case North extends CardinalPoint(Pos(-1, 0))
   case East extends CardinalPoint(Pos(0, 1))
@@ -23,16 +25,11 @@ enum CardinalPoint(val vector: Pos) {
 object CardinalPoint {
   def fromDegrees(degrees: Int): CardinalPoint = {
     require(degrees % 90 == 0)
-    mod(degrees / 90, 4) match {
+    (degrees / 90) mod 4 match {
       case 0 => East
       case 1 => North
       case 2 => West
       case 3 => South
     }
-  }
-
-  private def mod(a: Int, b: Int): Int = {
-    val r = a % b
-    if (r >= 0) r else r + b
   }
 }
