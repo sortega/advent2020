@@ -19,3 +19,11 @@ def groupByEmptyLines(iterator: LazyList[String]): LazyList[List[String]] =
     val (firstParagraph, rest) = iterator.span(_.strip().nonEmpty)
     firstParagraph.toList #:: groupByEmptyLines(rest.drop(1))
   }
+
+def timed[A](block: => A): A = {
+  val start = System.nanoTime()
+  try block
+  finally {
+    println("(in %f ms)".format((System.nanoTime() - start) / 1000000f))
+  }
+}

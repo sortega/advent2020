@@ -39,6 +39,6 @@ object Day15 {
   def main(args: Array[String]): Unit = {
     val input = List(0, 14, 1, 3, 7, 9)
     println(part1(input))
-    println(part2(input))
+    timed(println(part2(input)))
   }
 }
