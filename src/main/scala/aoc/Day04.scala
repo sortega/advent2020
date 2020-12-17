@@ -38,7 +38,7 @@ object Day04 {
     def parseAll(input: Iterator[String]): List[Passport] =
       if (input.isEmpty) Nil
       else {
-        val (firstParagraph, rest) = input.span(_.strip().nonEmpty)
+        val (firstParagraph, rest) = input.span(_.trim.nonEmpty)
         parse(firstParagraph) :: parseAll(rest.drop(1))
       }
 
