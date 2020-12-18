@@ -3,28 +3,13 @@ package aoc
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.chaining._
+import scala.util.matching.Regex
 
 object Day16 {
   type Ticket = List[Int]
-  object Ticket {
-    def parse(input: String): Ticket = input.split(",").map(_.toInt).toList
-  }
 
   case class FieldConstraint(name: String, ranges: List[Range]) {
     def apply(value: Int): Boolean = ranges.exists(_.contains(value))
-  }
-
-  object FieldConstraint {
-    def parse(input: String): FieldConstraint = input match {
-      case s"$name: $from1-$to1 or $from2-$to2" =>
-        FieldConstraint(
-          name,
-          List(
-            from1.toInt to to1.toInt,
-            from2.toInt to to2.toInt
-          )
-        )
-    }
   }
 
   case class Input(
@@ -64,22 +49,37 @@ object Day16 {
   }
 
   object Input {
-    def parse(input: List[String]): Input = {
-      val emptyLines = input.zipWithIndex.collect { case ("", index) =>
-        index
-      }
-      Input(
-        input
-          .take(emptyLines(0))
-          .map { line =>
-            val c = FieldConstraint.parse(line)
-            c.name -> c
-          }
-          .toMap,
-        Ticket.parse(input(emptyLines(0) + 2)),
-        input.drop(emptyLines(1) + 2).map(Ticket.parse)
-      )
+    import scala.util.parsing.combinator._
+
+    object Grammar extends RegexParsers {
+      override protected val whiteSpace: Regex = "[ ]+".r
+
+      def number: Parser[Int]  = """\d+""".r ^^ { _.toInt }
+      def range: Parser[Range] = (number ~ "-" ~ number) ^^ { case a ~ _ ~ b => a to b }
+      def ticket: Parser[Ticket] = (number ~ ("," ~> number).*) ^^ { _ :: _}
+      def fieldName: Parser[String] = ("""[a-z ]+""".r <~ ":") ^^ { _.toString }
+      def fieldConstraint: Parser[FieldConstraint] =
+        (fieldName ~ range ~ ("or" ~> range)) ^^ {
+          case name ~ range1 ~ range2 => FieldConstraint(name, List(range1, range2))
+        }
+      def fieldConstraints: Parser[Map[String, FieldConstraint]] =
+        (fieldConstraint <~ "\n").+ ^^ { constraints =>
+          constraints.map(c => c.name -> c).toMap
+        }
+        
+      def yourTicket: Parser[Ticket] = "your ticket:" ~ "\n" ~> ticket <~ "\n"
+      
+      def nearbyTickets: Parser[List[Ticket]] = 
+        "nearby tickets:" ~ "\n" ~> (ticket <~ "\n").+
+        
+      def input: Parser[Day16.Input] =
+        ((fieldConstraints <~ "\n") ~ (yourTicket <~ "\n") ~ nearbyTickets) ^^ {
+          case constraints ~ ticket ~ tickets => Day16.Input(constraints, ticket, tickets)
+        }
     }
+
+    def parse(input: List[String]): Input = 
+      Grammar.parse(Grammar.input, input.mkString("", "\n", "\n")).get
   }
 
   def part1(input: Input): Int =

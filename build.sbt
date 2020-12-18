@@ -1,5 +1,7 @@
 val dottyVersion = "3.0.0-M2"
 
+testFrameworks += new TestFramework("munit.Framework")
+
 lazy val root = project
   .in(file("."))
   .settings(
@@ -9,6 +11,8 @@ lazy val root = project
     scalaVersion := dottyVersion,
 
     libraryDependencies ++= Seq(
-      "com.novocode" % "junit-interface" % "0.11" % "test"
+      ("org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2").withDottyCompat(scalaVersion.value),
+      "com.novocode" % "junit-interface" % "0.11" % Test,
+      "org.scalameta" %% "munit" % "0.7.19" % Test
     )
   )
