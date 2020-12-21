@@ -7,12 +7,13 @@ lazy val root = project
   .settings(
     name := "advent2020",
     version := "0.1.0",
-
     scalaVersion := dottyVersion,
-
     libraryDependencies ++= Seq(
-      ("org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2").withDottyCompat(scalaVersion.value),
-      "com.novocode" % "junit-interface" % "0.11" % Test,
-      "org.scalameta" %% "munit" % "0.7.19" % Test
+      "net.java.dev.jna"         % "jna-platform"             % "5.5.0",
+      "com.google.protobuf"      % "protobuf-java"            % "3.14.0",
+      ("org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2")
+        .withDottyCompat(scalaVersion.value),
+      "com.novocode"   % "junit-interface" % "0.11"   % Test,
+      "org.scalameta" %% "munit"           % "0.7.19" % Test
     )
   )
