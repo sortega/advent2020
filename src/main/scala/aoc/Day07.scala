@@ -19,13 +19,11 @@ object Day07 {
 
     private def parseContents(contents: String): Map[Color, Int] =
       if (contents == "no other bags") Map.empty
-      else
-        contents
-          .split(",")
-          .map {
-            case ContentsPattern(amount, color) => (Symbol(color), amount.toInt)
-          }
-          .toMap
+      else contents.safeSplit(",")
+        .map {
+          case ContentsPattern(amount: String, color: String) => (Symbol(color), amount.toInt)
+        }
+        .toMap
   }
 
   private def chainsContaining(rules: List[Rule], content: Color): Set[Chain] = {

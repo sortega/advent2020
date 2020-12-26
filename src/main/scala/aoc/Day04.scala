@@ -38,15 +38,15 @@ object Day04 {
     def parseAll(input: Iterator[String]): List[Passport] =
       if (input.isEmpty) Nil
       else {
-        val (firstParagraph, rest) = input.span(_.trim.nonEmpty)
+        val (firstParagraph, rest) = input.span(_.trim.nn.nonEmpty)
         parse(firstParagraph) :: parseAll(rest.drop(1))
       }
 
     def parse(lines: Iterator[String]): Passport =
-      Passport(lines.flatMap(_.split(" ")).map(parseField).toMap)
+      Passport(lines.flatMap(_.safeSplit(" ")).map(f => parseField(f.nn)).toMap)
 
-    private def parseField(string: String): (String, String) = string.split(":") match {
-      case Array(field, value) => (field, value)
+    private def parseField(string: String): (String, String) = string.safeSplit(":") match {
+      case List(field, value) => (field, value)
     }
   }
 

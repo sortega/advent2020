@@ -43,7 +43,7 @@ object Day14 {
         case 'X' => '0'
         case _ => '1'
       })
-      val value = parseBinary(packed.replaceAll("X", "0"))
+      val value = parseBinary(packed.replaceAll("X", "0").nn)
       OverwriteMask(packed, mask, value)
     }
   }

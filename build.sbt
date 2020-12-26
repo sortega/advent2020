@@ -8,6 +8,7 @@ lazy val root = project
     name := "advent2020",
     version := "0.1.0",
     scalaVersion := dottyVersion,
+    scalacOptions += "-Yexplicit-nulls",
     libraryDependencies ++= Seq(
       "net.java.dev.jna"         % "jna-platform"             % "5.5.0",
       "com.google.protobuf"      % "protobuf-java"            % "3.14.0",

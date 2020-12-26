@@ -10,7 +10,4 @@ class Day25Test {
     assertEquals(14897079L, part1(cardPk = 5764801, doorPk = 17807724))
   }
 
-//  @Test def part2Test(): Unit = {
-//  }
-
 }

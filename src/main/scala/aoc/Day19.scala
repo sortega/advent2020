@@ -31,9 +31,8 @@ object Day19 {
     def parse(lines: List[String]): Ruleset = Ruleset(lines.map {
       case s"""$id: "$text""""       => id.toInt -> Rule.Literal(text)
       case s"""$id: $references""" =>
-        val alternatives = references.split("\\|")
-          .map(_.split(" ").filterNot(_.isEmpty).map(_.toInt).toList)
-          .toList
+        val alternatives = references.safeSplit("\\|")
+          .map(_.safeSplit(" ").map(_.toInt))
         id.toInt -> Rule.Composed(alternatives)
     }.toMap)
   }
@@ -41,7 +40,7 @@ object Day19 {
   case class Input(rules: Ruleset, messages: List[String])
   object Input {
     def parse(lines: List[String]): Input = {
-      val (ruleLines, _ :: messages) = lines.span(_.trim.nonEmpty)
+      val (ruleLines, _ :: messages) = lines.span(_.trim.nn.nonEmpty)
       Input(Ruleset.parse(ruleLines), messages)
     }
   }
@@ -49,7 +48,7 @@ object Day19 {
   def part1(input: Input): Int = {
     val patterns = {
       val pattern = input.rules.toPattern(0)
-      if (pattern.contains("%d")) (1 to 10).map(n => pattern.replaceAll("%d", n.toString).r)
+      if (pattern.contains("%d")) (1 to 10).map(n => pattern.replaceAll("%d", n.toString).nn.r)
       else List(pattern.r)
     }
     println(patterns)

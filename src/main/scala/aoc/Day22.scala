@@ -29,10 +29,7 @@ object Day22 {
 
     def keep(card: Card): Player = Player(deck.enqueue(card))
 
-    def score: Int = deck.reverse
-      .zip(LazyList.from(1))
-      .map { case (card, factor) => card * factor }
-      .sum
+    def score: Int = deck.reverse.zip(LazyList.from(1)).map(_ * _).sum
 
     override def toString: String = deck.mkString(", ")
   }
@@ -46,7 +43,7 @@ object Day22 {
 
   object Game {
     def parse(lines: Iterator[String]): Game = {
-      val (beforeBreak, afterBreak) = lines.span(_.trim.nonEmpty)
+      val (beforeBreak, afterBreak) = lines.span(_.trim.nn.nonEmpty)
       Game(Player.parse(beforeBreak.drop(1)), Player.parse(afterBreak.drop(2)))
     }
   }

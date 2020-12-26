@@ -18,21 +18,21 @@ object Day21 {
   object Recipe {
     def parse(input: String): Recipe = input match {
       case s"$ingredients (contains $alergens)" =>
-        Recipe(ingredients.split(" ").toList, alergens.split(", ").toList)
+        Recipe(ingredients.safeSplit(" "), alergens.safeSplit(", "))
     }
   }
 
   def findAlergens(recipes: List[Recipe]): List[Map[String, Option[String]]] = {
-    val model       = new Solver("AlergenSolver")
+    val model       = Solver("AlergenSolver")
     val ingredients = recipes.flatMap(_.ingredients).distinct.toArray
     val alergens    = ("" :: recipes.flatMap(_.alergens).distinct).toArray
 
-    val ingredientAlergens =
-      model.makeIntVarArray(ingredients.size, 0, alergens.size - 1, "alergens")
+    val ingredientAlergens: Array[IntVar | UncheckedNull] =
+      model.makeIntVarArray(ingredients.size, 0, alergens.size - 1, "alergens").nn
     model.addConstraint(model.makeAllDifferentExcept(ingredientAlergens, 0))
 
     recipes.foreach { recipe =>
-      val recipeAlergens = recipe.ingredients.map { name =>
+      val recipeAlergens: Array[IntVar | UncheckedNull] = recipe.ingredients.map { name =>
         ingredientAlergens(ingredients.indexOf(name))
       }.toArray
       recipe.alergens.foreach { alergenName =>
@@ -42,7 +42,7 @@ object Day21 {
     }
 
     val decisionBuilder =
-      model.makePhase(ingredientAlergens, Solver.CHOOSE_FIRST_UNBOUND, Solver.ASSIGN_MIN_VALUE)
+      model.makePhase(ingredientAlergens, Solver.CHOOSE_FIRST_UNBOUND, Solver.ASSIGN_MIN_VALUE).nn
     model.newSearch(decisionBuilder)
 
     LazyList

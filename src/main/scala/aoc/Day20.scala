@@ -1,6 +1,6 @@
 package aoc
 
-import scala.annotation.tailrec
+import scala.annotation.{tailrec, threadUnsafe}
 import scala.collection.mutable
 import scala.util.chaining._
 
@@ -36,14 +36,14 @@ object Day20 {
       lines: List[String],
       rotated: Int = 0,
       horizFlip: Boolean = false) {
-    lazy val borders: Map[CardinalPoint, Int] = {
+    @threadUnsafe lazy val borders: Map[CardinalPoint, Int] = {
       val (west, east) = lines.map(l => (l.head, l.last)).unzip
       Map(
         North -> lines.head,
         South -> lines.last.reverse,
         East  -> east.mkString,
         West  -> west.mkString.reverse
-      ).map { case (dir, chars) =>
+      ).map { (dir, chars) =>
         dir -> Integer.parseInt(chars.replaceAll("#", "1").replaceAll("\\.", "0"), 2)
       }
     }
@@ -147,11 +147,11 @@ object Day20 {
     val assembledTiles = mutable.Map.empty[Pos, Tile]
 
     // Rest of tiles
-    for {
+    for 
       row <- 0 until n
       col <- 0 until n
       pos = Pos(row, col)
-    } {
+    do {
       val northBorder =
         assembledTiles.get(Pos(row - 1, col)).map(_.borders(South).pipe(MatchingBorders))
       val westBorder =
@@ -171,15 +171,13 @@ object Day20 {
       require(candidates.size >= 1, s"${candidates.mkString("[", ", ", "]")} found")
       val candidate = candidates.head
 
-      val temp1 = Orientation.Range.map(candidate.withOrientation)
-      val temp2 = temp1
+      val orientedTiles = Orientation.Range.map(candidate.withOrientation)
         .filter { tile =>
           northBorder match {
             case Some(border) => tile.borders(North) == border
-            case None         => matchingId(North, tile).isEmpty
+            case None => matchingId(North, tile).isEmpty
           }
         }
-      val orientedTiles = temp2
         .filter { tile =>
           westBorder match {
             case Some(border) => tile.borders(West) == border

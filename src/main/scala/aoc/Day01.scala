@@ -1,7 +1,6 @@
 package aoc
 
 object Day01 {
-  val input = parseInputLines(day = 1)(_.toInt)
 
   def part1(entries: List[Int]): Int = {
     val set = entries.toSet
@@ -19,6 +18,7 @@ object Day01 {
     } yield first * second * third).head
 
   def main(args: Array[String]): Unit = {
+    val input = parseInputLines(day = 1)(_.toInt)
     println(part1(input))
     println(part2(input))
   }

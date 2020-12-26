@@ -3,8 +3,8 @@ package aoc
 import scala.io.{BufferedSource, Source}
 
 def readInputLines(day: Int, test: Boolean = false): Iterator[String] = {
-  val name = "/day%02d%s.txt".format(day, if (test) "_test" else "")
-  Source.fromInputStream(getClass.getResourceAsStream(name)).getLines()
+  val name = "day%02d%s.txt".format(day, if (test) "_test" else "")
+  Source.fromResource(name).getLines()
 }
 
 def parseInputLines[A](day: Int, test: Boolean = false)(parse: String => A): List[A] =
@@ -16,7 +16,7 @@ def parseInputGroupedLines[A](day: Int, test: Boolean = false)(parse: List[Strin
 def groupByEmptyLines(iterator: LazyList[String]): LazyList[List[String]] =
   if (iterator.isEmpty) LazyList.empty
   else {
-    val (firstParagraph, rest) = iterator.span(_.trim.nonEmpty)
+    val (firstParagraph, rest) = iterator.span(_.trim.nn.nonEmpty)
     firstParagraph.toList #:: groupByEmptyLines(rest.drop(1))
   }
 
@@ -36,4 +36,11 @@ extension[A, B] (elems: IterableOnce[A]) {
   def withValues(f: A => B): Map[A, B] = elems.iterator.map { a =>
     a -> f(a)
   }.toMap
+}
+
+extension (string: String) {
+  def safeSplit(pattern: String): List[String] =
+    string.split(pattern).nn.collect[String] {
+      case word if word != null && word.nonEmpty => word.nn
+    }.toList
 }

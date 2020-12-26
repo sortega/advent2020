@@ -23,13 +23,10 @@ object Day13 {
 
   object Bus {
     def parse(input: String): List[Bus] =
-      input
-        .split(",")
-        .zipWithIndex
+      input.safeSplit(",").zipWithIndex
         .collect {
           case (id, offset) if id.toIntOption.nonEmpty => Bus(id.toInt, offset)
         }
-        .toList
   }
 
   def part2(buses: List[Bus]): BigInt =
@@ -40,7 +37,7 @@ object Day13 {
   def main(args: Array[String]): Unit = {
     val lines      = readInputLines(day = 13).toList
     val start      = lines.head.toInt
-    val ids        = lines(1).split(",").toList
+    val ids        = lines(1).safeSplit(",")
     val numericIds = ids.flatMap(_.toIntOption)
     println(part1(start, numericIds))
     println(part2(Bus.parse(lines(1))))

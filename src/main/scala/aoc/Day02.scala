@@ -26,12 +26,11 @@ object Day02 {
     }
   }
 
-  val input = parseInputLines(day = 2)(parseEntry)
-
   def part1(entries: List[Entry]): Int = entries.count(_.matchesOldPolicy)
   def part2(entries: List[Entry]): Int = entries.count(_.matchesNewPolicy)
 
   def main(args: Array[String]): Unit = {
+    val input = parseInputLines(day = 2)(parseEntry)
     println(part1(input))
     println(part2(input))
   }

@@ -14,21 +14,21 @@ object Day23 {
     after ++ before
   }
 
-  class Node(val value: Int, var next: Node) {
+  class Node(val value: Int, var next: Node | Null) {
     def find(target: Int): Option[Node] = {
       var current = this
       while (current.value != target) {
-        current = current.next
-        if (current == null || current == this) {
-          return None
+        current.next match {
+          case null | this => return None
+          case other: Node => current = other
         }
       }
       return Some(current)
     }
 
     def excise(size: Int): Node = {
-      val excisionStart = next
-      val excisionEnd   = repeatedly(excisionStart, size - 1)(_.next)
+      val excisionStart = next.nn
+      val excisionEnd   = repeatedly(excisionStart, size - 1)(_.next.nn)
       next = excisionEnd.next
       excisionEnd.next = null
       excisionStart
@@ -38,13 +38,12 @@ object Day23 {
       val after = next
       next = nodes
       var current = nodes
-      while(current.next != null) {
-        current = current.next
-      }
+      while (current.next != null)
+        current = current.next.nn
       current.next = after
     }
 
-    def toLazyList: LazyList[Int] = value #:: Option(next).fold(LazyList.empty)(_.toLazyList)
+    def toLazyList: LazyList[Int] = value #:: Option(next).fold(LazyList.empty)(_.nn.toLazyList)
   }
 
   case class Cups(head: Node, index: Map[Int, Node]) {
@@ -60,7 +59,7 @@ object Day23 {
       if (verbose) { println(s"destination: $destinationValue\n") }
       val destination = index(destinationValue)
       destination.insert(picked)
-      copy(head = head.next)
+      copy(head = head.next.nn)
     }
 
     def move(times: Int): Cups = {
@@ -68,14 +67,14 @@ object Day23 {
       (1 to times).foldLeft(this) { (cups, i) =>
         if (i % 1000000 == 0) {
           val iterNanos = if (i > 0) (System.nanoTime() - start).toDouble / i else 0d
-          val remaining      = ((times - i) * iterNanos / 1000000 / 1000).toInt
+          val remaining = ((times - i) * iterNanos / 1000000 / 1000).toInt
           println(s"-- move $i -- (${iterNanos.round} ns/iter, $remaining secs remaining)")
         }
         cups.move
       }
     }
 
-    def numbersAfter1: LazyList[Int] = head.find(1).get.next.toLazyList
+    def numbersAfter1: LazyList[Int] = head.find(1).get.next.nn.toLazyList
 
     def twoNumbersAfter1Multiplied: Long =
       numbersAfter1.take(2).map(_.toLong).product
@@ -83,7 +82,7 @@ object Day23 {
     override def toString: String = {
       val buffer  = new StringBuilder(s"(${head.value})")
       var pointer = head.next
-      while (pointer != head) {
+      while (pointer != head && pointer != null) {
         buffer.append(s" ${pointer.value}")
         pointer = pointer.next
       }
@@ -95,8 +94,8 @@ object Day23 {
     def parse(input: String): Cups = apply(input.map(_.toString.toInt))
 
     def apply(values: IndexedSeq[Int]): Cups = {
-      val nodes = values.map(new Node(_, next = null))
-      nodes.zip(nodes.tail :+ nodes.head).foreach { case (node, next) =>
+      val nodes = values.map(Node(_, next = null))
+      nodes.zip(nodes.tail :+ nodes.head).foreach { (node, next) =>
         node.next = next
       }
       val index = nodes.map(n => n.value -> n).toMap
