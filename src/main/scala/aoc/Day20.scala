@@ -234,8 +234,8 @@ object Day20 {
     }.toSet
   }
 
-  def rotate(points: Set[Pos]): Set[Pos]        = points.map(_ * Pos(-1, 0))
-  def flip(points: Set[Pos]): Set[Pos]          = points.map(p => p.copy(c = -p.c))
+  def rotate(points: Set[Pos]): Set[Pos] = points.map(_ * Pos(-1, 0))
+  def flip(points: Set[Pos]): Set[Pos]   = points.map(p => p.copy(c = -p.c))
   def toString(points: Set[Pos]): String = {
     val minRow = points.map(_.r).min
     val maxRow = points.map(_.r).max
@@ -256,19 +256,13 @@ object Day20 {
     println(seaMap)
 
     val bitmap = toPointSet(seaMap)
-    val patterns = List(
-      MonsterPoints,
-      MonsterPoints.pipe(rotate),
-      MonsterPoints.pipe(rotate).pipe(rotate),
-      MonsterPoints.pipe(rotate).pipe(rotate).pipe(rotate)
-    ).flatMap { pattern =>
+    val patterns = List.iterate(MonsterPoints, 4)(rotate).flatMap { pattern =>
       List(pattern, flip(pattern))
     }
 
     val numMonsters = (for {
       pattern <- patterns
       results = findPattern(bitmap, pattern)
-      _       = println(results)
     } yield results.size).sum
     bitmap.size - numMonsters * MonsterPoints.size
   }
