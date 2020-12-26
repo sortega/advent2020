@@ -38,4 +38,19 @@ object Pos {
     Pos( 1, -1), Pos( 1, 0), Pos( 1, 1)
   )
   // format: on
+
+  object Syntax {
+    extension[A](matrix: List[List[A]]) {
+      def apply(pos: Pos): A =
+        matrix
+          .applyOrElse(
+            pos.r,
+            _ => throw new ArrayIndexOutOfBoundsException(s"${pos} not in matrix")
+          )
+          .applyOrElse(
+            pos.c,
+            _ => throw new ArrayIndexOutOfBoundsException(s"${pos} not in matrix")
+          )
+    }
+  }
 }
