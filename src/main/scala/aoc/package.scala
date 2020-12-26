@@ -16,7 +16,7 @@ def parseInputGroupedLines[A](day: Int, test: Boolean = false)(parse: List[Strin
 def groupByEmptyLines(iterator: LazyList[String]): LazyList[List[String]] =
   if (iterator.isEmpty) LazyList.empty
   else {
-    val (firstParagraph, rest) = iterator.span(_.strip().nonEmpty)
+    val (firstParagraph, rest) = iterator.span(_.trim.nonEmpty)
     firstParagraph.toList #:: groupByEmptyLines(rest.drop(1))
   }
 
@@ -26,4 +26,14 @@ def timed[A](block: => A): A = {
   finally {
     println("(in %f ms)".format((System.nanoTime() - start) / 1000000f))
   }
+}
+
+extension[A, B] (elems: IterableOnce[A]) {
+  def keyBy(f: A => B): Map[B, A] = elems.iterator.map { a =>
+    f(a) -> a
+  }.toMap
+  
+  def withValues(f: A => B): Map[A, B] = elems.iterator.map { a =>
+    a -> f(a)
+  }.toMap
 }
