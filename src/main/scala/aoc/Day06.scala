@@ -7,7 +7,7 @@ object Day06 {
   }
 
   object Group {
-    def parse(lines: List[String]): Group = Group(lines.map(_.strip.toSet))
+    def parse(lines: List[String]): Group = Group(lines.map(_.trim.toSet))
   }
   
   def part1(input: List[Group]): Int = input.map(_.uniqueAnswers.size).sum
