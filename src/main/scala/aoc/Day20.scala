@@ -10,6 +10,7 @@ import aoc.Pos.Syntax._
 
 object Day20 {
   type Matrix[A] = List[List[A]]
+
   object Matrix {
     def tabulate[A](rows: Int, cols: Int)(f: (Int, Int) => A): Matrix[A] =
       (0 until rows).map { row =>
@@ -61,6 +62,8 @@ object Day20 {
         .pipe(repeatedly(_, if (horizFlip) 1 else 0)(_.horizontalFlip))
     }
 
+    def trimmed: List[String] = lines.slice(1, 9).map(_.slice(1, 9))
+
     override def toString: String =
       lines.mkString(
         "Tile %d (rot=%d, flip=%s):\nBorders: %s\n".format(id, rotated, horizFlip, borders),
@@ -81,7 +84,7 @@ object Day20 {
   }
 
   case class Puzzle(tiles: Matrix[Tile]) extends AnyVal {
-    def assembled: String =
+    def assembledWithBorders: String =
       tiles
         .flatMap { tileRow =>
           "" ::
@@ -91,6 +94,16 @@ object Day20 {
               }
               .transpose
               .map(_.mkString)
+        }
+        .mkString("\n")
+
+    def assembled: String =
+      tiles
+        .flatMap { tileRow =>
+          tileRow
+            .map(_.trimmed)
+            .transpose
+            .map(_.mkString)
         }
         .mkString("\n")
   }
@@ -188,7 +201,7 @@ object Day20 {
 
   def part1(input: List[Tile]): Long = {
     val puzzle = solve(input)
-    println(puzzle.assembled)
+    println(puzzle.assembledWithBorders)
     List(
       puzzle.tiles.head.head,
       puzzle.tiles.head.last,
@@ -197,7 +210,68 @@ object Day20 {
     ).map(_.id.toLong).product
   }
 
-  def part2(input: List[Tile]): Long = ???
+  private def toPointSet(bitmap: String): Set[Pos] =
+    (for {
+      (line, row) <- bitmap.linesIterator.zipWithIndex
+      (char, col) <- line.zipWithIndex
+      if char == '#'
+    } yield Pos(row, col)).toSet
+
+  val MonsterPoints = toPointSet("""..................#.
+                                   |#....##....##....###
+                                   |.#..#..#..#..#..#...
+                                   |""".stripMargin)
+
+  def findPattern(bitmap: Set[Pos], pattern: Set[Pos]): Set[Pos] = {
+    val numberedPoints = pattern.zipWithIndex.toMap
+    val possiblePatterns: Map[Pos, Set[Int]] = (for {
+      point           <- bitmap
+      (delta, number) <- numberedPoints
+    } yield (point - delta, number))
+      .groupMapReduce(_._1)(pair => Set(pair._2))(_ union _)
+    possiblePatterns.collect {
+      case (pos, points) if points.size == pattern.size => pos
+    }.toSet
+  }
+
+  def rotate(points: Set[Pos]): Set[Pos]        = points.map(_ * Pos(-1, 0))
+  def flip(points: Set[Pos]): Set[Pos]          = points.map(p => p.copy(c = -p.c))
+  def toString(points: Set[Pos]): String = {
+    val minRow = points.map(_.r).min
+    val maxRow = points.map(_.r).max
+    val minCol = points.map(_.c).min
+    val maxCol = points.map(_.c).max
+    (minRow to maxRow)
+      .map { row =>
+        (minCol to maxCol).map { col =>
+          if (points(Pos(row, col))) '#' else '.'
+        }.mkString
+      }
+      .mkString("\n")
+  }
+
+  def part2(input: List[Tile]): Int = {
+    val seaMap = solve(input).assembled
+    println()
+    println(seaMap)
+
+    val bitmap = toPointSet(seaMap)
+    val patterns = List(
+      MonsterPoints,
+      MonsterPoints.pipe(rotate),
+      MonsterPoints.pipe(rotate).pipe(rotate),
+      MonsterPoints.pipe(rotate).pipe(rotate).pipe(rotate)
+    ).flatMap { pattern =>
+      List(pattern, flip(pattern))
+    }
+
+    val numMonsters = (for {
+      pattern <- patterns
+      results = findPattern(bitmap, pattern)
+      _       = println(results)
+    } yield results.size).sum
+    bitmap.size - numMonsters * MonsterPoints.size
+  }
 
   def main(args: Array[String]): Unit = {
     val input = Tile.parseAll(readInputLines(day = 20))

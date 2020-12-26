@@ -85,4 +85,8 @@ class Day20Test {
   @Test def part1Test(): Unit = {
     assertEquals(20899048083289L, part1(input))
   }
+
+  @Test def part2Test(): Unit = {
+    assertEquals(273, part2(input))
+  }
 }

@@ -4,6 +4,7 @@ case class Pos(r: Int, c: Int) {
   import Pos._
   
   def +(other: Pos)  = Pos(r + other.r, c + other.c)
+  def -(other: Pos)  = Pos(r - other.r, c - other.c)
   def *(scalar: Int) = Pos(r * scalar, c * scalar)
 
   /** Complex number multiplication assuming rows as the x axis
